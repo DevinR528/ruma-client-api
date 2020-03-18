@@ -122,44 +122,32 @@ impl EndpointError for Error {
         response: ruma_api::exports::http::Response<Vec<u8>>,
     ) -> Result<Self, ruma_api::error::ResponseDeserializationError> {
         match response.status() {
-            http::StatusCode::FORBIDDEN => {
-                Ok(Error {
-                    kind: ErrorKind::Forbidden,
-                    message: "forbidden message".into(),
-                    status_code: http::StatusCode::FORBIDDEN,
-                })
-            },
-            http::StatusCode::NOT_FOUND => {
-                Ok(Error {
-                    kind: ErrorKind::NotFound,
-                    message: "resource not found".into(),
-                    status_code: http::StatusCode::NOT_FOUND,
-                })
-            },
-            http::StatusCode::UNAUTHORIZED => {
-                Ok(Error {
-                    kind: ErrorKind::Unauthorized,
-                    message: "unauthorized".into(),
-                    status_code: http::StatusCode::UNAUTHORIZED,
-                })
-            },
-            http::StatusCode::IM_USED => {
-                Ok(Error {
-                    kind: ErrorKind::UserInUse,
-                    message: "user in use".into(),
-                    status_code: http::StatusCode::IM_USED,
-                })
-            }, 
-            http::StatusCode::PAYLOAD_TOO_LARGE => {
-                Ok(Error {
-                    kind: ErrorKind::TooLarge,
-                    message: "too large".into(),
-                    status_code: http::StatusCode::PAYLOAD_TOO_LARGE,
-                })
-            },
-            _ => {
-                Err(ruma_api::error::ResponseDeserializationError::from_response(response))
-            }
+            http::StatusCode::FORBIDDEN => Ok(Error {
+                kind: ErrorKind::Forbidden,
+                message: "forbidden message".into(),
+                status_code: http::StatusCode::FORBIDDEN,
+            }),
+            http::StatusCode::NOT_FOUND => Ok(Error {
+                kind: ErrorKind::NotFound,
+                message: "resource not found".into(),
+                status_code: http::StatusCode::NOT_FOUND,
+            }),
+            http::StatusCode::UNAUTHORIZED => Ok(Error {
+                kind: ErrorKind::Unauthorized,
+                message: "unauthorized".into(),
+                status_code: http::StatusCode::UNAUTHORIZED,
+            }),
+            http::StatusCode::IM_USED => Ok(Error {
+                kind: ErrorKind::UserInUse,
+                message: "user in use".into(),
+                status_code: http::StatusCode::IM_USED,
+            }),
+            http::StatusCode::PAYLOAD_TOO_LARGE => Ok(Error {
+                kind: ErrorKind::TooLarge,
+                message: "too large".into(),
+                status_code: http::StatusCode::PAYLOAD_TOO_LARGE,
+            }),
+            _ => Err(ruma_api::error::ResponseDeserializationError::from_response(response)),
         }
     }
 }
