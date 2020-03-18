@@ -1,6 +1,6 @@
 //! Errors that can be sent from the homeserver.
-
 use serde::{Deserialize, Serialize};
+use ruma_api::EndpointError;
 
 /// An enum for the error kind. Items may contain additional information.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -115,6 +115,14 @@ pub struct Error {
     pub message: String,
     /// The http status code
     pub status_code: http::StatusCode,
+}
+
+impl EndpointError for Error {
+    fn try_from_response(
+        response: ruma_api::exports::http::Response<Vec<u8>>
+    ) -> Result<Self, ruma_api::error::ResponseDeserializationError> {
+        todo!("write actual code")
+    }
 }
 
 impl From<Error> for ErrorBody {
