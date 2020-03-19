@@ -1,6 +1,8 @@
 //! Errors that can be sent from the homeserver.
-use ruma_api::EndpointError;
+use http::StatusCode;
+use ruma_api::{error::ResponseDeserializationError, EndpointError};
 use serde::{Deserialize, Serialize};
+use serde_json::from_slice;
 
 /// An enum for the error kind. Items may contain additional information.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -114,40 +116,17 @@ pub struct Error {
     /// A human-readable error message, usually a sentence explaining what went wrong.
     pub message: String,
     /// The http status code
-    pub status_code: http::StatusCode,
+    pub status_code: StatusCode,
 }
 
 impl EndpointError for Error {
     fn try_from_response(
         response: ruma_api::exports::http::Response<Vec<u8>>,
-    ) -> Result<Self, ruma_api::error::ResponseDeserializationError> {
-        match response.status() {
-            http::StatusCode::FORBIDDEN => Ok(Error {
-                kind: ErrorKind::Forbidden,
-                message: "forbidden message".into(),
-                status_code: http::StatusCode::FORBIDDEN,
-            }),
-            http::StatusCode::NOT_FOUND => Ok(Error {
-                kind: ErrorKind::NotFound,
-                message: "resource not found".into(),
-                status_code: http::StatusCode::NOT_FOUND,
-            }),
-            http::StatusCode::UNAUTHORIZED => Ok(Error {
-                kind: ErrorKind::Unauthorized,
-                message: "unauthorized".into(),
-                status_code: http::StatusCode::UNAUTHORIZED,
-            }),
-            http::StatusCode::IM_USED => Ok(Error {
-                kind: ErrorKind::UserInUse,
-                message: "user in use".into(),
-                status_code: http::StatusCode::IM_USED,
-            }),
-            http::StatusCode::PAYLOAD_TOO_LARGE => Ok(Error {
-                kind: ErrorKind::TooLarge,
-                message: "too large".into(),
-                status_code: http::StatusCode::PAYLOAD_TOO_LARGE,
-            }),
-            _ => Err(ruma_api::error::ResponseDeserializationError::from_response(response)),
+    ) -> Result<Self, ResponseDeserializationError> {
+        if let Ok(error_body) = from_slice::<ErrorBody>(response.body()) {
+            Ok(error_body.into_error(response.status()))
+        } else {
+            Err(ResponseDeserializationError::from_response(response))
         }
     }
 }
