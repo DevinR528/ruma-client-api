@@ -24,6 +24,5 @@ ruma_api! {
         pub unstable_features: HashMap<String, bool>
     }
 
-    error: crate::error::Error
-
+    error: crate::Error
 }

@@ -1,8 +1,8 @@
 //! Errors that can be sent from the homeserver.
-use http::StatusCode;
+
+use http::{Response, StatusCode};
 use ruma_api::{error::ResponseDeserializationError, EndpointError};
 use serde::{Deserialize, Serialize};
-use serde_json::from_slice;
 
 /// An enum for the error kind. Items may contain additional information.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -121,12 +121,11 @@ pub struct Error {
 
 impl EndpointError for Error {
     fn try_from_response(
-        response: ruma_api::exports::http::Response<Vec<u8>>,
+        response: Response<Vec<u8>>,
     ) -> Result<Self, ResponseDeserializationError> {
-        if let Ok(error_body) = from_slice::<ErrorBody>(response.body()) {
-            Ok(error_body.into_error(response.status()))
-        } else {
-            Err(ResponseDeserializationError::from_response(response))
+        match serde_json::from_slice::<ErrorBody>(response.body()) {
+            Ok(error_body) => Ok(error_body.into_error(response.status())),
+            Err(de_error) => Err(ResponseDeserializationError::new(de_error, response)),
         }
     }
 }
