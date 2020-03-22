@@ -1,6 +1,5 @@
 //! Errors that can be sent from the homeserver.
 
-use http::StatusCode;
 use ruma_api::{error::ResponseDeserializationError, EndpointError};
 use serde::{Deserialize, Serialize};
 
@@ -116,7 +115,7 @@ pub struct Error {
     /// A human-readable error message, usually a sentence explaining what went wrong.
     pub message: String,
     /// The http status code
-    pub status_code: StatusCode,
+    pub status_code: http::StatusCode,
 }
 
 impl EndpointError for Error {
