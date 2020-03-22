@@ -13,7 +13,7 @@ Improvements:
 * Add `filter` type for `r0::context::get_context`
 
 Breaking changes:
-
+* Update ruma-api to 0.15.0 
 * Update ruma-api to 0.14.0
 * Fix `r0::session::get_login_types`
 * Add `allow_remote` parameter to `r0::media::get_content`
