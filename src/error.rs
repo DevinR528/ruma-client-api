@@ -1,6 +1,6 @@
 //! Errors that can be sent from the homeserver.
 
-use http::{Response, StatusCode};
+use http::StatusCode;
 use ruma_api::{error::ResponseDeserializationError, EndpointError};
 use serde::{Deserialize, Serialize};
 
@@ -121,7 +121,7 @@ pub struct Error {
 
 impl EndpointError for Error {
     fn try_from_response(
-        response: Response<Vec<u8>>,
+        response: http::Response<Vec<u8>>,
     ) -> Result<Self, ResponseDeserializationError> {
         match serde_json::from_slice::<ErrorBody>(response.body()) {
             Ok(error_body) => Ok(error_body.into_error(response.status())),
