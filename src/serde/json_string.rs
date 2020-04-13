@@ -2,10 +2,9 @@
 //! Delegates to `js_int::UInt` to ensure integer size is within bounds.
 
 use serde::{
-    de::{Error as _, Deserialize, Deserializer, DeserializeOwned},
+    de::{Deserialize, DeserializeOwned, Deserializer, Error as _},
     ser::{Error as _, Serialize, Serializer},
 };
-use serde_json;
 
 /// Serialize a filter into a json string.
 pub fn serialize<T, S>(filter: T, serializer: S) -> Result<S::Ok, S::Error>
@@ -33,18 +32,20 @@ mod tests {
 
     use ruma_identifiers::RoomId;
 
-    use crate::r0::message::get_message_events::{Request, Direction};
     use crate::r0::filter::{LazyLoadOptions, RoomEventFilter};
+    use crate::r0::message::get_message_events::{Direction, Request};
 
     #[test]
     fn test_serialize_some_room_event_filter() {
         let room_id = RoomId::try_from("!roomid:example.org").unwrap();
         let filter = RoomEventFilter {
-            lazy_load_options: LazyLoadOptions::Enabled { include_redundant_members: true, },
-            rooms: Some(vec![ room_id.clone() ]),
-            not_rooms: vec![ "room".into(), "room2".into(), "room3".into() ],
-            not_types: vec![ "type".into() ],
-            .. Default::default()
+            lazy_load_options: LazyLoadOptions::Enabled {
+                include_redundant_members: true,
+            },
+            rooms: Some(vec![room_id.clone()]),
+            not_rooms: vec!["room".into(), "room2".into(), "room3".into()],
+            not_types: vec!["type".into()],
+            ..Default::default()
         };
         let req = Request {
             room_id,
@@ -90,5 +91,4 @@ mod tests {
         let request: http::Request<Vec<u8>> = req.try_into().unwrap();
         println!("{:?}", request.uri());
     }
-
 }
