@@ -49,6 +49,7 @@ ruma_api! {
         /// A RoomEventFilter to filter returned events with.
         #[serde(skip_serializing_if = "Option::is_none")]
         #[ruma_api(query)]
+        #[serde(with = "crate::serde::json_string")]
         pub filter: Option<RoomEventFilter>,
     }
 
