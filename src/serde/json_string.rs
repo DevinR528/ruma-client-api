@@ -7,7 +7,7 @@ use serde::{
 };
 use serde_json;
 
-/// Serialize a filter into a query string.
+/// Serialize a filter into a json string.
 pub fn serialize<T, S>(filter: T, serializer: S) -> Result<S::Ok, S::Error>
 where
     T: Serialize,
@@ -17,7 +17,7 @@ where
     serializer.serialize_str(&json)
 }
 
-/// Deserializes a filter from a query string.
+/// Deserializes a filter from a json string.
 pub fn deserialize<'de, T, D>(deserializer: D) -> Result<T, D::Error>
 where
     T: DeserializeOwned,
@@ -31,8 +31,6 @@ where
 mod tests {
     use std::convert::{TryFrom, TryInto};
 
-    use serde::{Deserialize, Serialize};
-    use serde_json::json;
     use ruma_identifiers::RoomId;
 
     use crate::r0::message::get_message_events::{Request, Direction};
@@ -64,13 +62,6 @@ mod tests {
     #[test]
     fn test_serialize_none_room_event_filter() {
         let room_id = RoomId::try_from("!roomid:example.org").unwrap();
-        let filter = RoomEventFilter {
-            lazy_load_options: LazyLoadOptions::Enabled { include_redundant_members: true, },
-            rooms: Some(vec![ room_id.clone() ]),
-            not_rooms: vec![ "room".into() ],
-            not_types: vec![ "type".into() ],
-            .. Default::default()
-        };
         let req = Request {
             room_id,
             from: "token".into(),
