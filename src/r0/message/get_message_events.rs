@@ -47,9 +47,8 @@ ruma_api! {
         #[ruma_api(query)]
         pub limit: Option<UInt>,
         /// A RoomEventFilter to filter returned events with.
-        #[serde(skip_serializing_if = "Option::is_none")]
         #[ruma_api(query)]
-        #[serde(with = "crate::serde::json_string")]
+        #[serde(with = "crate::serde::json_string", skip_serializing_if = "Option::is_none")]
         pub filter: Option<RoomEventFilter>,
     }
 
